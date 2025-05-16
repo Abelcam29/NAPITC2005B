@@ -1,6 +1,6 @@
 const dataSource = require('../Datasource/MySQLMngr');
 const hashService = require('./hashPassword');
-
+require('dotenv').config();
 /** 
  * @returns
  */
@@ -38,9 +38,25 @@ async function findUser(idUsuario){
 async function insertUser(user){
     let qResult;
     try{
-        let query = "INSERT INTO usuario (Nombre, Apellidos, email, password, nombreOrganizacion, hash_password) VALUES (?,?,?,?,?,?)";
-        user.hash.password = await hashService.encryptPassword(user.password);
-        let params = [user.Nombre, user.Apellidos, user.email, user.password, user.nombreOrganizacion, user.hash_password];
+        let query = "INSERT INTO usuario (Nombre, Apellidos, email, password, pais, numerotel, region, ciudad, nombreOrganizacion, descOrganizacion, rol, estado, idResponsable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        const salt = hashService.getSalt();
+        const hash = await hashService.encryptPassword(user.password, salt);
+        const hash_password = salt + hash;
+        let params = [
+            user.Nombre,
+            user.Apellidos,
+            user.email,
+            hash_password, 
+            user.pais,
+            user.numerotel,
+            user.region,
+            user.ciudad,
+            user.nombreOrganizacion,
+            user.descOrganizacion,
+            user.rol,
+            user.estado,
+            user.idResponsable
+        ];
         qResult = await dataSource.getDataWithParams(query, params);
     }catch(err){
         qResult = new dataSource.QueryResult(false, [], 0,0, err.message);

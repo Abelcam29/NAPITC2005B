@@ -37,8 +37,8 @@ console.log('No se ha configurado la seguridad de la sesion');
  */
 function configureServer(app){
     app.use(cors()); //inicializa el middleware de cors
-    app.use(bodyParser.json()); //middleware para bodyParser
-    app.use(bodyParser.urlencoded({ extended: true}));
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
     app.use(express.static('public'));
     app.use(router);
 }

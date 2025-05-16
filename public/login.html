@@ -59,31 +59,31 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   </body>
 </html>
-<script>
-  document.querySelector('form').addEventListener('submit', async function (event) {
-    event.preventDefault();
+  <script>
+    document.querySelector('form').addEventListener('submit', async function (event) {
+      event.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      const response = await fetch('/Consultas/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username: email, password })
-      });
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      try {
+        const response = await fetch('/Consultas/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
 
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        alert('Login exitoso');
-        window.location.href = 'http://zs4ossco8g0kg4sgsw0wco4g.20.55.28.0.sslip.io/';
-      } else {
-        alert('Error al iniciar sesión');
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem('token', data.token);
+          alert('Login exitoso');
+          window.location.href = 'http://zs4ossco8g0kg4sgsw0wco4g.20.55.28.0.sslip.io/?token=' + data.token;
+        } else {
+          alert('Error al iniciar sesión');
+        }
+      } catch (error) {
+        alert('Error de conexión');
       }
-    } catch (error) {
-      alert('Error de conexión');
-    }
-  });
-</script>
+    });
+  </script>

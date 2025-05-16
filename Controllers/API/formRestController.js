@@ -12,12 +12,13 @@ const SECRET = process.env.SECRET;
 async function insertVClimaticas(req, res) {
     try
     {
-        if(!req.user_id)
+        if(!req.user.id)
         {
+            console.log('❌ Token sin ID:', req.user);
             return res.status(401).json({message: 'Unauthorized'});
         } 
         let form = req.body;
-        const result = await formsService.insertVClimaticas(form, req.user_id);
+        const result = await formsService.insertVClimaticas(form, req.user.id);
         return res.status(200).json({
             "status" : "success",
             "total" : result.changes,
@@ -42,7 +43,7 @@ async function insertVClimaticas(req, res) {
 async function insertCamarasTrampa(req, res) {
     try
     {
-        if(!req.user_id)
+        if(!req.user.id)
         {
             return res.status(401).json({message: "Unauthorized"});
         }
@@ -71,11 +72,11 @@ async function insertCamarasTrampa(req, res) {
 async function insertFaunaBusquedaLibre(req, res) {
     try
     {
-        if(!req.user_id)
+        if(!req.user.id)
         {
             return res.status(401).json({message: "Unauthorized"});
         }
-        const idUsuario = req.user_id;
+        const idUsuario = req.user.id;
         result = await formsService.insertFaunaBusquedaLibre(req.body, idUsuario);
         return res.status(200).json({
             "status" : "success",
@@ -103,11 +104,11 @@ async function insertFaunaBusquedaLibre(req, res) {
 async function insertFaunaPuntoConteo(req, res) {
     try
     {
-        if(!req.user_id)
+        if(!req.user.id)
         {
             return res.status(401).json({message: "Unauthorized"});
         }
-        const idUsuario = req.user_id;
+        const idUsuario = req.user.id;
         result = await formsService.insertFaunaPuntoConteo(req.body, idUsuario);
         return res.status(200).json({
             "status" : "success",

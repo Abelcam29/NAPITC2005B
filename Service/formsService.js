@@ -6,7 +6,7 @@ const dataSource = require('../Datasource/MySQLMngr');
 async function insertformInicial(estadoTiempo, estacion, tipoRegistro, idUsuario){
     let qResult;
     try{
-        let query = "INSERT INTO formularinicial (estadoTiempo, estacion, tipoRegistro, idUsuario) VALUES (?,?,?,?)";
+        let query = "INSERT INTO formularioinicial (estadoTiempo, estacion, tipoRegistro, idCreador) VALUES (?,?,?,?)";
         let params = [estadoTiempo, estacion, tipoRegistro, idUsuario];
         qResult = await dataSource.insertData(query, params);
     }
@@ -24,10 +24,12 @@ async function insertVClimaticas(form, idUsuario)
 {
     let qResult;
     const consult = await insertformInicial(form.estadoTiempo, form.estacion, form.tipoRegistro, idUsuario);
-    if(!consult.success)
+    console.log('ID del registro creado en formularioinicial:', consult.gen_id);
+    if(!consult.status)
     {
         return consult;
     }
+    console.log('ID del registro creado en formularioinicial:', consult.gen_id);
     const idRegistro = consult.gen_id;
     try{
         let query = "INSERT INTO variables_climaticas (idRegistro, zona, pluviosidadMm, temperaturaMaxima, humedadMaxima, temperaturaMinima, nivelQuebradaMt) VALUES(?,?,?,?,?,?,?)";

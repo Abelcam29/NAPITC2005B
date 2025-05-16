@@ -6,16 +6,16 @@ require('dotenv').config();
 const SECRET = process.env.SECRET;
 
 async function execLogin(req, res) {
-    const {username, password} = req.body;
+    const {email, password} = req.body;
     console.log('Login request body:', req.body);
-    const user = await hashService.isValidUser(username, password)
+    const user = await hashService.isValidUser(email, password)
 
     if (!user) {
         return res.status(401).json({message: 'Invalid credentials'});
     }
 
     const token = jwt.sign(
-        {id: user.id, username: user.username},
+        {id: user.id, email: user.email},
         SECRET,
         {   expiresIn: '1h' }
     );
@@ -30,18 +30,24 @@ async function execLogin(req, res) {
  * @param {*} next el metodo que sera ejecutado
  * @returns accesos no autorizados
  */
-async function authenticateToken(req, res, next)
-{
-    authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    async function authenticateToken(req, res, next)
+    {
+        let token = null;
+        const authHeader = req.headers['authorization'];
+        if(authHeader && authHeader.startsWith('Bearer ')){
+            token = authHeader.split(' ')[1];
+        } else if (req.query && req.query.token){
+            token = req.query.token;
+        }
 
-    if(!token) return res.sendStatus(401);
-    jwt.verify(token, SECRET, (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
-    });
-}
+        if(!token) return res.sendStatus(401);
+        
+        jwt.verify(token, SECRET, (err, user) => {
+            if (err) return res.sendStatus(403);
+            req.user = user;
+            next();
+        });
+    }
 
 /**
  * @param {Object} req
@@ -104,7 +110,7 @@ async function insertUser(req, res)
     try
     {
         let user = req.body;
-        const result = await userService.insertUser(username);
+        const result = await userService.insertUser(user);
         res.status(200);
         res.json({
             "status"  : "success",
