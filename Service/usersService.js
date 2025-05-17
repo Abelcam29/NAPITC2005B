@@ -23,10 +23,25 @@ async function findUser(idUsuario){
     let qResult;
     try{
         let query = "SELECT * FROM usuario WHERE idUsuario = ?";
-        let params = [idUsuario]
+        let params = [idUsuario];
         qResult = await dataSource.getDataWithParams(query, params);
     }catch(err){
         qResult = new dataSource.QueryResult(false,[],0,0,err.message);
+    }
+    return qResult;
+}
+async function getValores(email)
+{
+    let qResult;
+    try
+    {
+        let query = "SELECT estado, rol FROM usuario WHERE email = ?";
+        let params = [email];
+        qResult = await dataSource.getDataWithParams(query, params);
+    }
+    catch(err)
+    {
+        qResult = new dataSource.QueryResult(false, [], 0, 0, err.message);
     }
     return qResult;
 }
@@ -68,12 +83,30 @@ async function insertUser(user){
  * @param {*} user
  * @returns
  */
-async function updateUser(user){
+async function updateUser(user, idUsuario){
     let qResult;
     try{
-        let query = "UPDATE usuario SET name = ?, username = ?, password = ?, age = ?, hash_password = ? WHERE id = ?";
-        user.hash_password = await hashService.encryptPassword(user.password);
-        let params = [user.name, user.username, user.password, user.age, user.hash_password, user.id];
+        let query = "UPDATE usuario SET Nombre = ?, Apellidos = ?, email = ?, password = ?, pais = ?, numerotel = ?, region = ?, ciudad = ?, nombreOrganizacion = ?, descOrganizacion = ?, rol = ?, estado = ?, idResponsable = ? WHERE id = ?";
+        const salt = hashService.getSalt();
+        const hash = await hashService.encryptPassword(user.password, salt);
+        const hash_password = salt + hash;
+
+        let params = [
+            user.Nombre,
+            user.Apellidos,
+            user.email,
+            hash_password,
+            user.pais,
+            user.numerotel,
+            user.region,
+            user.ciudad,
+            user.nombreOrganizacion,
+            user.descOrganizacion,
+            user.rol,
+            user.estado,
+            user.idResponsable,
+            idUsuario
+        ];
         qResult = await dataSource.updateData(query, params);
     }catch(err){
         qResult = new dataSource.QueryResult(false, [], 0, 0, err.message);
@@ -87,7 +120,7 @@ async function updateUser(user){
 async function deleteUser(user_id){
     let qResult;
     try{
-        let query = "DELETE FROM usuario WHERE id = ?";
+        let query = "DELETE FROM usuario WHERE idUsuario = ?";
         let params = [user_id];
         qResult = await dataSource.deleteUser(query, params);
     }catch(err){
@@ -101,5 +134,6 @@ module.exports = {
     findUser,
     insertUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getValores
 }

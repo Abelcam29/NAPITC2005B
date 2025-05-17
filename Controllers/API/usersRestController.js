@@ -8,19 +8,23 @@ const SECRET = process.env.SECRET;
 async function execLogin(req, res) {
     const {email, password} = req.body;
     console.log('Login request body:', req.body);
-    const user = await hashService.isValidUser(email, password)
+    const result = await userService.getValores(email);
+    if (!result.status) {
+        return res.status(401).json({message: 'user not found'});
+    }
+    estado = result.rows[0].estado;
+    rol = result.rows[0].rol;
 
+    const user = await hashService.isValidUser(email, password);
     if (!user) {
         return res.status(401).json({message: 'Invalid credentials'});
     }
-
-    const token = jwt.sign(
+        const token = jwt.sign(
         {id: user.id, email: user.email},
         SECRET,
         {   expiresIn: '1h' }
     );
-
-    res.json({  token });
+    return res.json({  token, rol, estado });
 }
 
 /**
@@ -56,8 +60,7 @@ async function execLogin(req, res) {
 async function getUsers(req, res){
     try{
         const result = await userService.getUsers();
-        res.status(200);
-        res.json({
+        return res.status(200).json({
             "status"  : "success",
             "total"   : result.rows.length ,
             "records" : result.rows
@@ -68,8 +71,7 @@ async function getUsers(req, res){
             "message" : error.message
         };
         console.log(error);
-        res.status(500);
-        res.send(jsonError);
+        return res.status(500).json(jsonError);
     }
 }
 /**
@@ -83,8 +85,7 @@ async function findUser(req,res)
     {
         let username = req.body.username;
         const result = await userService.findUser(username);
-        res.status(200);
-        res.json({
+        return res.status(200).json({
             "status"   :  "success",
             "total"    :  result.rows.length,
             "records"  :  result.rows
@@ -97,8 +98,7 @@ async function findUser(req,res)
             "message" : error.message
         };
         console.log(error);
-        res.status(500);
-        res.send(jsonError);
+        return res.status(500).json(jsonError);
         }
     }
 /**
@@ -111,8 +111,7 @@ async function insertUser(req, res)
     {
         let user = req.body;
         const result = await userService.insertUser(user);
-        res.status(200);
-        res.json({
+        return res.status(200).json({
             "status"  : "success",
             "total"   : result.changes,
             "records" : result.gen_id
@@ -126,8 +125,7 @@ async function insertUser(req, res)
             "message" : error.message
         };
         console.log(error);
-        res.status(500);
-        res.send(jsonError);
+        return res.status(500).json(jsonError);
     }
 }
 
@@ -139,10 +137,13 @@ async function updateUser(req, res)
 {
     try
     {
-        let user = req.body;
-        const result = await userService.updateUser(user);
-        res.status(200);
-        res.json({
+        if(!req.user.id)
+        {
+            return res.status(401).json({message: "Unauthorized"});
+        }
+        let userinf = req.body;
+        const result = await userService.updateUser(userinf, req.user.id);
+        return res.status(200).json({
             "status" : "success",
             "total"  : result.changes
         });
@@ -153,9 +154,8 @@ async function updateUser(req, res)
             "status"  : "error",
             "message" : error.message
         };
-        console.log(erro);
-        res.status(500);
-        res.send(jsonError);
+        console.log(error);
+        return res.status(500).json(jsonError);
     }
 }
 
@@ -169,21 +169,19 @@ async function deleteUser(req,res)
     {
         let user_id = req.body.user_id;
         const result = await userService.deleteUser(user_id);
-        res.status(200);
-        res.json({
+        return res.status(200).json({
             "status"  : "success",
             "total"   : result.changes
         });
     }
     catch(error)
     {
-        let.jsonError = {
+        let jsonError = {
             "status"  : "error",
             "message" : error.message
         };
         console.log(error);
-        res.status(500);
-        res.send(jsonError);
+        return res.status(500).json(jsonError);
     }
 }
 
