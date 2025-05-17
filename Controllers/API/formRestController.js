@@ -48,7 +48,7 @@ async function insertCamarasTrampa(req, res) {
             return res.status(401).json({message: "Unauthorized"});
         }
         let form = req.body;
-        const result = await formsService.insertCamarasTrampa(form, req.user_id);
+        const result = await formsService.insertCamarasTrampa(form, req.user.id);
         return res.status(200).json({
             "status" : "success",
             "total" : result.changes,
@@ -77,7 +77,7 @@ async function insertFaunaBusquedaLibre(req, res) {
             return res.status(401).json({message: "Unauthorized"});
         }
         const idUsuario = req.user.id;
-        result = await formsService.insertFaunaBusquedaLibre(req.body, idUsuario);
+        const result = await formsService.insertFaunaBusquedaLibre(req.body, idUsuario);
         return res.status(200).json({
             "status" : "success",
             "total" : result.changes,
@@ -109,7 +109,7 @@ async function insertFaunaPuntoConteo(req, res) {
             return res.status(401).json({message: "Unauthorized"});
         }
         const idUsuario = req.user.id;
-        result = await formsService.insertFaunaPuntoConteo(req.body, idUsuario);
+        const result = await formsService.insertFaunaPuntoConteo(req.body, idUsuario);
         return res.status(200).json({
             "status" : "success",
             "total" : result.changes,
@@ -126,12 +126,102 @@ async function insertFaunaPuntoConteo(req, res) {
         return res.status(500).json(jsonError);
     }
 }
+/**
+ * @param {*} req 
+ * @param {*} res 
+ */
+async function insertFaunaTransecto(req, res){
+    try
+    {
+        if(!req.user.id)
+        {
+            return res.status(401).json({message: "Unauthorized"});
+        }
+        const idUsuario = req.user.id;
+        const result = await formsService.insertFaunaTransecto(req.body, idUsuario);
+        return res.status(200).json({
+            "status" : "success",
+            "total" : result.changes,
+            "records" : result.gen_id
+        });
+    }
+    catch(error)
+    {
+        let jsonError = {
+            "status" : "error",
+            "message": error.message
+        }
+        console.log(error);
+        return res.status(500).json(jsonError);
+    }
+}
+
+/**
+ * @param {*} req
+ * @param {*} res
+ */
+
+async function insertValidacionCobertura(req, res) {
+    try
+    {
+        if(!req.user.id)
+        {
+            return res.status(401).json({message: "Unauthorized"});
+        }
+        const idUsuario = req.user.id;
+        const result = await formsService.insertValidacionCobertura(req.body, idUsuario);
+        return res.status(200).json({
+            "status" : "success",
+            "total" : result.changes,
+            "records" : result.gen_id
+        });
+    }
+    catch(error)
+    {
+        let jsonError = {
+            "status" : "error",
+            "message" : error.message
+        }
+        console.log(error);
+        return res.status(500).json(jsonError);
+    }
+}
+
+/**
+ * @param {*} req
+ * @param {*} res
+ */
+async function insertParcelaVegetacion(req, res)
+{
+    try{
+        if(!req.user.id)
+        {
+            return res.status(401).json({message: "Unauthorized"});
+        }
+        const idUsuario = req.user.id;
+        const result = await formsService.insertParcelaVegetacion(req.body, idUsuario);
+        return res.status(200).json({
+            "status" : "success",
+            "total" : result.changes,
+            "records" : result.gen_id
+        });
+    }
+    catch(error)
+        {
+            let jsonError = {
+                "status" : "error",
+                "message" : error.message
+            }
+            console.log(error);
+            return res.status(500).json(jsonError);
+        }
+}
 module.exports = {
     insertVClimaticas,
     insertCamarasTrampa,
     insertFaunaBusquedaLibre,
     insertFaunaPuntoConteo,
-    //insertFaunaTransecto,
-    //insertValidacionCobertura,
-    //insertParcelaVegetacion
+    insertFaunaTransecto,
+    insertValidacionCobertura,
+    insertParcelaVegetacion
 }

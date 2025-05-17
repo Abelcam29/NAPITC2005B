@@ -27,7 +27,7 @@ async function isValidUser(username, password){
     //let query = 'SELECT id, name, username, password, age, hash_password from usuario where username = ?';
     let query = 'SELECT idUsuario as id, email, nombre, password FROM usuario WHERE email = ?';
     let params = [username];
-    qResult = await dataSource.getDataWithParams(query, params);
+    let qResult = await dataSource.getDataWithParams(query, params);
     let user = qResult.rows[0];
     if(user){
         const salt = user.password.substring(0 , SALT_SIZE);
