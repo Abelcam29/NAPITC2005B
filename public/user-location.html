@@ -1,58 +1,55 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crear cuenta - Mawi</title>
-    <meta name="description" content="Crear cuenta en Mawi" />
+    <title>Información de ubicación - Mawi</title>
+    <meta name="description" content="Información de ubicación en Mawi" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="mawi-auth-container">
       <div class="mawi-auth-card">
-        <h1>Crear cuenta</h1>
-        <p class="link-text">
-          <a href="login.html" class="mawi-link">¿Iniciar sesión?</a>
-        </p>
+        <h1>¿De donde eres?</h1>
+        <p class="subtitle">Completa tu usuario agregando esta información</p>
 
-        <form action="profile-image.html">
+        <form>
           <div class="form-group">
-            <label for="firstName">Nombre*</label>
+            <label for="country">País</label>
             <input
-              id="firstName"
+              id="country"
               type="text"
-              placeholder="Escribe tu nombre"
+              placeholder="Escribe el nombre de tu país"
               required
             />
           </div>
 
           <div class="form-group">
-            <label for="lastName">Apellidos*</label>
+            <label for="phone">Número telefónico</label>
             <input
-              id="lastName"
+              id="phone"
+              type="tel"
+              placeholder="Escribe tu número de teléfono"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="region">Región/Provincia</label>
+            <input
+              id="region"
               type="text"
-              placeholder="Escribe tus apellidos"
+              placeholder="Escribe el nombre de tu región o provincia"
               required
             />
           </div>
 
           <div class="form-group">
-            <label for="email">Correo electrónico*</label>
+            <label for="city">Ciudad</label>
             <input
-              id="email"
-              type="email"
-              placeholder="Escribe tu correo"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="password">Contraseña*</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Escribe una contraseña"
+              id="city"
+              type="text"
+              placeholder="Escribe el nombre de tu ciudad"
               required
             />
           </div>
@@ -66,10 +63,6 @@
           <p>
             ¿Necesitas ayuda? <a href="#" class="mawi-link">Contacta con nosotros</a>
           </p>
-        </div>
-        
-        <div class="nav-link">
-          <a href="index.html" class="mawi-link">Volver al inicio</a>
         </div>
       </div>
     </div>

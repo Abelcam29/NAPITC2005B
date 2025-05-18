@@ -52,6 +52,64 @@ async function execLogin(req, res) {
             next();
         });
     }
+/**
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns
+ */
+async function authenticateTokenAdmin(req, res, next)
+{
+    let token = null;
+    const authHeader = req.headers['authorization'];
+    if(authHeader && authHeader.startsWith('Bearer ')){
+        token = authHeader.split(' ')[1];
+    } else if (req.query && req.query.token){
+        token = req.query.token;
+    }
+    if(!token) return res.sendStatus(401);
+
+    jwt.verify(token, SECRET, (err, user) => {
+        if(err) return res.sendStatus(403);
+        if(user.rol === 3){
+            req.user = user;
+            next();
+        } else {
+            return res.status(403).json({message: "Unauthorized"});
+        }
+    })
+}
+/**
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+async function authenticateTokenSAdmin(req, res, next)
+{
+    let token = null;
+    const authHeader = req.headers['aunthorization'];
+    if(authHeader && authHeader.startsWith('Bearer '))
+    {
+        token = authHeader.split(' ')[1];
+    }
+    else if(req.query && req.query.token)
+    {
+        token = req.query.token;
+    }
+    if(!token) return res.sendStatus(401);
+    jwt.verify(token, SECRET, (err, user) => {
+        if(err) return res.sendStatus(403);
+        if(user.rol === 4)
+        {
+            req.user = user;
+            next();
+        }
+        else
+        {
+            return res.status(403).json({message: "Unauthorized"});
+        }
+    })
+}
 
 /**
  * @param {Object} req
@@ -186,5 +244,5 @@ async function deleteUser(req,res)
 }
 
 module.exports = {
-    execLogin, authenticateToken, getUsers, findUser, insertUser, updateUser, deleteUser
+    execLogin, authenticateToken, authenticateTokenAdmin, authenticateTokenSAdmin, getUsers, findUser, insertUser, updateUser, deleteUser
 }
