@@ -158,4 +158,4 @@ async function AceptarUsuario(idUsuario)
     return qResult;
 }
 
-module.exports = (getRegistros, getRegistrosPorUsuario, updateRegistro, getUsersNoAceptados, AceptarUsuario);
+module.exports = {getRegistros, getRegistrosPorUsuario, updateRegistro, getUsersNoAceptados, AceptarUsuario};

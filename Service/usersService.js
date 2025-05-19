@@ -72,8 +72,9 @@ async function insertUser(user){
             user.estado,
             user.idResponsable
         ];
-        qResult = await dataSource.getDataWithParams(query, params);
+        qResult = await dataSource.insertData(query, params);
     }catch(err){
+        console.log(err);
         qResult = new dataSource.QueryResult(false, [], 0,0, err.message);
     }
     return qResult;

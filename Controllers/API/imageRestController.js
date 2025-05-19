@@ -1,57 +1,76 @@
 const multer = require('multer');
 const path = require('path');
-const imageService = require('../../Service/imageUploadService');
-require('dotenv').config();
+const fs = require('fs');
+const { uploadedImageLog } = require('../../Service/imageUploadService'); 
 
-const IMAGE_PATH = process.env.IMAGE_PATH;
-
+// Configure multer storage for multiple files
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, IMAGE_PATH);
+    destination: function (req, file, cb) {
+        const uploadPath = path.join(__dirname, '../../public/uploads/');
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        cb(null, uploadPath);
     },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now();
+        cb(null, `${uniqueSuffix}-${file.originalname}`);
     }
 });
 
-const upload = multer({ storage });
 
+const upload = multer({ storage }).array('images', 5); // limit to 5
 
-/** 
+/**
+ * Process uploaded images and log them to DB
  * @param {*} req
  * @param {*} res
  */
-async function processUpload(req, res){
-    try{
-        console.log(req.file);
-        let image = {
-            name: req.file.filename,
-            usuario_carga: req.user.username
-        }
-        let result = await imageService.uploadedImageLog(image);
-        if(result.getStatus()){
-            res.status(200);
-            res.json({
-                "status" : "success"
+async function processUpload(req, res) {
+    try {
+        const usuario_carga = req.user?.id;
+        if (!usuario_carga) {
+            return res.status(401).json({
+                status: 'error',
+                message: 'Unauthorized: user ID not found in token'
             });
-        }else{
-            let jsonError = {
-                "status" : "error",
-                "message": result.getErr()
-            };
-            res.status(500);
-            res.send(jsonError);
         }
 
-    }catch(error){
-        let jsonError = {
-            "status" : "error",
-            "message": error.message
-        };
-        console.log(error);
-        res.status(500);
-        res.send(jsonError);
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'No images uploaded'
+            });
+        }
+
+        
+        for (const file of req.files) {
+            const logResult = await uploadedImageLog({
+                name: file.filename,
+                usuario_carga
+            });
+
+            if (!logResult.status) {
+                console.error(`Failed to log image ${file.filename}`);
+            }
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Images uploaded and logged successfully',
+            files: req.files.map(f => f.filename)
+        });
+
+    } catch (err) {
+        console.error("Image upload error:", err);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Server error during image upload'
+        });
     }
 }
 
-module.exports = {upload, processUpload}
+module.exports = {
+    upload,
+    processUpload
+};

@@ -71,7 +71,7 @@ async function authenticateTokenAdmin(req, res, next)
 
     jwt.verify(token, SECRET, (err, user) => {
         if(err) return res.sendStatus(403);
-        if(user.rol === 3){
+        if(user.rol >= 3){
             req.user = user;
             next();
         } else {
@@ -87,7 +87,7 @@ async function authenticateTokenAdmin(req, res, next)
 async function authenticateTokenSAdmin(req, res, next)
 {
     let token = null;
-    const authHeader = req.headers['aunthorization'];
+    const authHeader = req.headers['authorization'];
     if(authHeader && authHeader.startsWith('Bearer '))
     {
         token = authHeader.split(' ')[1];
@@ -225,12 +225,24 @@ async function deleteUser(req,res)
 {
     try
     {
+        if(!req.user.id)
+        {
+            if(req.user.rol >= 3)
+            {
+                console.log("User ID: " + req.user.id);
+            }
+            else
+            {
+                return res.status(401).json({message: "Unauthorized"});
+            }
+        }
         let user_id = req.body.user_id;
         const result = await userService.deleteUser(user_id);
         return res.status(200).json({
-            "status"  : "success",
-            "total"   : result.changes
+        "status"  : "success",
+        "total"   : result.changes
         });
+
     }
     catch(error)
     {
