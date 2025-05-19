@@ -1,5 +1,6 @@
 const dataSource = require('../Datasource/MySQLMngr');
 const hashService = require('./hashPassword');
+const imageService = require('./imageUploadService');
 require('dotenv').config();
 /** 
  * @returns
@@ -50,6 +51,10 @@ async function getValores(email)
  * @param {*} user
  * @returns
  */
+
+/*la logica ser que, cheque si el usuario tiene imagen
+Si si la tiene, la subira a la base de datos en la tabla imagenes con el idUser. Si no la tiene, le asignara una default que estara ya en la DB
+Despues, alterara el registro del usuario insertado en la tabla usuario, para que tenga el ID de imagen que le corresponde*/
 async function insertUser(user){
     let qResult;
     try{
@@ -73,11 +78,33 @@ async function insertUser(user){
             user.idResponsable
         ];
         qResult = await dataSource.insertData(query, params);
+        /***/
+        const idUser = qResult.getGenId();
+        let idImagen = 1;
+        if(user.imagen)
+        {
+            let imageObj = {...user.imagen, usuario_carga: idUser};
+            let qResultImg = await imageService.uploadedImageLog(imageObj);
+            if(qResultImg && typeof qResultImg.getId === 'function')
+            {
+                idImagen = qResultImg.getId();
+            }
+        }
+        let query2 = "UPDATE usuario SET idImagen = ? WHERE idUsuario = ?";
+        let params2 = [idImagen, idUser];
+        await dataSource.updateData(query2, params2);
+        /***/
+        return {
+            status: "success",
+            idUser,
+            idImagen
+        };        
     }catch(err){
-        console.log(err);
-        qResult = new dataSource.QueryResult(false, [], 0,0, err.message);
+        return{
+            status: "error",
+            message: err.message
+        }
     }
-    return qResult;
 }
 
 /**
@@ -87,7 +114,7 @@ async function insertUser(user){
 async function updateUser(user, idUsuario){
     let qResult;
     try{
-        let query = "UPDATE usuario SET Nombre = ?, Apellidos = ?, email = ?, password = ?, pais = ?, numerotel = ?, region = ?, ciudad = ?, nombreOrganizacion = ?, descOrganizacion = ?, rol = ?, estado = ?, idResponsable = ? WHERE id = ?";
+        let query = "UPDATE usuario SET Nombre = ?, Apellidos = ?, email = ?, password = ?, pais = ?, numerotel = ?, region = ?, ciudad = ?, nombreOrganizacion = ?, descOrganizacion = ?, rol = ?, estado = ?, idResponsable = ? WHERE idUsuario = ?";
         const salt = hashService.getSalt();
         const hash = await hashService.encryptPassword(user.password, salt);
         const hash_password = salt + hash;

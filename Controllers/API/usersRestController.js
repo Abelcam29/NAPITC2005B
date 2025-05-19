@@ -225,18 +225,12 @@ async function deleteUser(req,res)
 {
     try
     {
-        if(!req.user.id)
+        const user_id = req.body.user_id;
+        if(req.user.id !== user_id && req.user.rol <=3)
         {
-            if(req.user.rol >= 3)
-            {
-                console.log("User ID: " + req.user.id);
-            }
-            else
-            {
-                return res.status(401).json({message: "Unauthorized"});
-            }
+            return res.status(403).json({message: "Unauthorized"});
         }
-        let user_id = req.body.user_id;
+
         const result = await userService.deleteUser(user_id);
         return res.status(200).json({
         "status"  : "success",
