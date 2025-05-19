@@ -23,7 +23,7 @@ const upload = multer({ storage });
  */
 async function processUpload(req, res){
     try{
-        console.log(req,file);
+        console.log(req.file);
         let image = {
             name: req.file.filename,
             usuario_carga: req.user.username
