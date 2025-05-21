@@ -13,7 +13,7 @@
         <h1>Trabajo u Organización</h1>
         <p class="subtitle">Completa tu usuario agregando esta información</p>
 
-        <form>
+        <form id="userOrgForm">
           <div class="form-group">
             <label for="Nombre Organizacion">Nombre Organizacion</label>
             <input
@@ -51,5 +51,50 @@
   </body>
 </html>
 <script>
+    document.getElementById('userOrgForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        localStorage.setItem('user-organization', JSON.stringify({
+            Norg: document.getElementById('Norg').value,
+            Dorg: document.getElementById('Dorg').value
+        }));
 
+        const signupData = JSON.parse(localStorage.getItem('signup-data'));
+        const profileImage = JSON.parse(localStorage.getItem('profile-image'));
+        const userLocation = JSON.parse(localStorage.getItem('user-location'));
+        const userOrg = JSON.parse(localStorage.getItem('user-organization'));
+        const userData = {
+            Nombre:signupData.nombre,
+            Apellidos:signupData.apellidos,
+            email:signupData.email,
+            password:signupData.password,
+            pais:userLocation.pais,
+            numerotel:userLocation.telefono,
+            region:userLocation.region,
+            ciudad:userLocation.ciudad,
+            nombreOrganizacion:userOrg.Norg,
+            descOrganizacion:userOrg.Dorg,
+            rol:2,
+            estado:'P',
+            idResponsable:NULL,
+            imagen:profileImage && profileImage.image ? {base64: profileImage.image } : null
+        };
+
+        const response = await fetch('/Consultas/api/inserUser', {
+            method: 'POST',
+            headers: {'Content-Type' : 'application/json'},
+            body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        if(data.status === "success") {
+            alert('Usuario registrado! espera la confirmacion por correo electronico');
+            localStorage.removeItem('signup-data');
+            localStorage.removeItem('profile-image');
+            localStorage.removeItem('user-location');
+            localStorage.removeItem('user-organization');
+            window.location.href = 'login.html';
+        } else {
+            alert('Error al registrar el usuario: ' + data.message);
+        }
+    });
 </script>

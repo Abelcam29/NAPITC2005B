@@ -15,9 +15,8 @@ const router = express.Router();
 // router.get(constants.contextURL+'/logout', templates.logout);
 
 //Rutas de la API
-
 router.post(constants.contextURL + constants.apiURL + "/login", usersRest.execLogin);
-router.get(constants.contextURL + constants.apiURL + "/getusers", usersRest.authenticateToken, usersRest.getUsers);
+router.get(constants.contextURL + constants.apiURL + "/getusers", usersRest.authenticateTokenSAdmin, usersRest.getUsers);
 router.post(constants.contextURL + constants.apiURL + "/findeUser", usersRest.authenticateToken, usersRest.findUser);
 router.post(constants.contextURL + constants.apiURL + "/insertUser", usersRest.insertUser);
 router.put(constants.contextURL + constants.apiURL + "/updateUser", usersRest.authenticateToken, usersRest.updateUser);

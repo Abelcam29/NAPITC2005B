@@ -13,7 +13,7 @@
         <h1>¿De donde eres?</h1>
         <p class="subtitle">Completa tu usuario agregando esta información</p>
 
-        <form>
+        <form id="userLocForm">
           <div class="form-group">
             <label for="country">País</label>
             <input
@@ -71,8 +71,14 @@
   </body>
 </html>
 <script>
-      document.getElementById('next-btn').addEventListener('click', function() {
-        window.location.href = 'user-organization.html';
-      });
-      
+      document.getElementById('userLocForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        localStograge.setItem('user-location', JSON.stringify({
+        country: document.getElementById('country').value,
+        phone: document.getElementById('phone').value,
+        region: document.getElementByID('region').value,
+        city: document.getElementById('city').value
+      }));
+      window.location.href = 'user-organization.html';
+    });
 </script>
