@@ -60,3 +60,54 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   </body>
 </html>
+<script>
+ document.querySelector('form').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  const response = await fetch('Consultas/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type' : 'application/json'},
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await response.json();
+  if(response.ok && data.token) {
+    const payload = JSON.parse(atob(data.token.split('.')[1]))
+    const rol = payload.rol;
+    const estado = payload.estado;
+    const Nombre = payload.nombre;
+    if (rol === 1 && estado ===  'A')
+    {
+      localStorage.setItem('token', data.token);
+      window.location.href = 'indexUsuario.html';
+      alert('Bienvenido ' + Nombre);
+    }
+    else if(rol === 2 && estado === 'A')
+    {
+      localStorage.setItem('token', data.token);
+      window.location.href = 'index.html';
+      alert('Bienvenido ' + Nombre);
+    }
+    else if(rol === 3 && estado === 'A')
+    {
+      localStorage.setItem('token', data.token);
+      window.location.href = 'indexAdmin.html';
+      alert('Bienvenido ' + Nombre);
+      
+    }
+    else if(rol === 4 && estado === 'A')
+    {
+      localStorage.setItem('token', data.token);
+      window.location.href = 'indexSAdmin.html';
+      alert('Bienvenido ' + Nombre);
+    }
+    else if(estado === 'I')
+    {
+      alert('Usuario inactivo, espera la activación de tu cuenta por correo electrónico.');
+    }
+  }
+ });
+</script>

@@ -11,17 +11,17 @@
     <div class="mawi-auth-container">
       <div class="mawi-auth-card">
         <h1>Tu imágen de perfil</h1>
-
-        <div class="profile-image-container">
-          <div class="profile-image-placeholder">
-            <span class="plus-icon">+</span>
+        <form id="profile-image-form">
+          <div class="profile-image-container">
+            <div class="profile-image-placeholder">
+              <span class="plus-icon">+</span>
+            </div>
           </div>
-        </div>
 
-        <button type="button" class="mawi-button with-icon">
-          Siguiente <span class="icon">→</span>
-        </button>
-
+          <button type="button" class="mawi-button with-icon" id="next-btn">
+            Siguiente <span class="icon">→</span>
+          </button>
+        </form>
         <div class="help-text">
           <p>
             ¿Necesitas ayuda? <a href="#" class="mawi-link">Contacta con nosotros</a>
@@ -31,5 +31,14 @@
     </div>
     <!-- Keep the GPT Engineer script tag -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script>
+      document.getElementById('profile-image-form').addEventListener('submit', function (e){
+        e.preventDefault();
+        localStorage.setItem('profile-image', JSON.stringify({
+          image: document.querySelector('.profile-image-placeholder').src
+        }));
+        window.location.href = 'user-location.html';
+      });
+    </script>
   </body>
 </html>

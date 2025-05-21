@@ -16,7 +16,7 @@
           <a href="login.html" class="mawi-link">¿Iniciar sesión?</a>
         </p>
 
-        <form action="profile-image.html">
+        <form id="signup-form">
           <div class="form-group">
             <label for="firstName">Nombre*</label>
             <input
@@ -75,5 +75,17 @@
     </div>
     <!-- Keep the GPT Engineer script tag -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script>
+      document.getElementById('signup-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        localStorage.setItem('signupData', JSON.stringify({
+          nombre: document.getElementById('firstName').value,
+          apellidos: document.getElementById('lastName').value,
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value
+        }));
+        window.location.href = 'profule-image.html';
+      });
+    </script>
   </body>
 </html>
