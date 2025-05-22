@@ -81,13 +81,13 @@ async function insertUser(user){
         /***/
         const idUser = qResult.getGenId();
         let idImagen = 1;
+        console.log('📦 user.imagen recibido:', user.imagen);
         if(user.imagen)
         {
             let imageObj = {...user.imagen, usuario_carga: idUser};
             let qResultImg = await imageService.uploadedImageLog(imageObj);
-            if(qResultImg && typeof qResultImg.getId === 'function')
-            {
-                idImagen = qResultImg.getId();
+            if (qResultImg && qResultImg.getStatus()) {
+                idImagen = qResultImg.getGenId();
             }
         }
         let query2 = "UPDATE usuario SET idImagen = ? WHERE idUsuario = ?";

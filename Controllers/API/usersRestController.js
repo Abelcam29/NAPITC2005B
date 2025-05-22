@@ -9,6 +9,7 @@ async function execLogin(req, res) {
     const {email, password} = req.body;
     console.log('Login request body:', req.body);
     const result = await userService.getValores(email);
+    console.log("getValores:", result.status, result.rows.length);
     if (!result.status) {
         return res.status(401).json({message: 'user not found'});
     }
@@ -20,7 +21,7 @@ async function execLogin(req, res) {
         return res.status(401).json({message: 'Invalid credentials'});
     }
         const token = jwt.sign(
-        {id: user.id, email: user.email},
+        {id: user.id, email: user.email, nombre: user.nombre},
         SECRET,
         {   expiresIn: '1h' }
     );

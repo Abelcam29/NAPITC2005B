@@ -1,6 +1,7 @@
 const dataSource = require('../Datasource/MySQLMngr');
 const { QueryResult } = dataSource;
-
+const fs = require('fs');
+const path = require('path');
 /**
  * 
  * @param {Array} images - Array 
@@ -56,14 +57,51 @@ async function uploadedImagesLog(images) {
  * @returns {Promise<QueryResult>} -
  */
 async function uploadedImageLog(image) {
-    if (!image || typeof image !== 'object') {
+    console.log("📸 Imagen recibida en uploadedImageLog:", image);
+
+    if (!image || typeof image !== 'object' || !image.base64 || !image.name || !image.usuario_carga) {
         return new QueryResult(false, [], 0, 0, 'Invalid image object');
     }
 
-    return await uploadedImagesLog([image]);
+    try {
+        const base64Data = image.base64.split(';base64,').pop();
+        const uploadDir = path.join(__dirname, '../public/uploads/usuarios');
+
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const sanitizedFilename = `${Date.now()}_${image.name.replace(/\s+/g, '_')}`;
+        const filepath = path.join(uploadDir, sanitizedFilename);
+
+        // Guarda la imagen en disco
+        fs.writeFileSync(filepath, base64Data, { encoding: 'base64' });
+        console.log('✅ Imagen guardada en disco:', filepath);
+
+        // Inserta en la base de datos individualmente
+        const query = 'INSERT INTO imagenes (nombreImagen, usuario_carga) VALUES (?, ?)';
+        const result = await dataSource.insertData(query, [sanitizedFilename, image.usuario_carga]);
+
+        if (!result.getStatus()) {
+            console.error("❌ Error insertando imagen:", result.getErr());
+            return result;
+        }
+
+        console.log("✅ Imagen registrada con ID:", result.getGenId());
+        return result;
+
+    } catch (err) {
+        cconsole.error('❌ Error en uploadedImageLog:', {
+        error: err,
+        message: err?.message,
+        stack: err?.stack
+        });
+        return new QueryResult(false, [], 0, 0, err.message);
+    }
 }
 
+
 module.exports = {
-    uploadedImageLog,
-    uploadedImagesLog
+    uploadedImagesLog,
+    uploadedImageLog
 };

@@ -73,10 +73,10 @@
 <script>
       document.getElementById('userLocForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        localStograge.setItem('user-location', JSON.stringify({
+        localStorage.setItem('user-location', JSON.stringify({
         country: document.getElementById('country').value,
         phone: document.getElementById('phone').value,
-        region: document.getElementByID('region').value,
+        region: document.getElementById('region').value,
         city: document.getElementById('city').value
       }));
       window.location.href = 'user-organization.html';

@@ -8,14 +8,17 @@ require('dotenv').config();
 
 const SALT_SIZE = parseInt(process.env.SALT_SIZE || '12');
 
-const getSalt = () => {
-    return crypto.randomBytes(Math.ceil(SALT_SIZE * 3 / 4)).toString('base64url').substring(0, process.env.SALT_SIZE);
+function getSalt() {
+    return crypto.randomBytes(SALT_SIZE).toString('base64url').substring(0, SALT_SIZE);
 }
 
-async function encryptPassword(text, salt){
-    const hashing = crypto.createHash('sha512');
-    const hash = hashing.update(salt + text).digest('base64url');
-    return hash
+function encryptPassword(password, salt) {
+    const iterations = 100000;
+    const keylen = 64; // bytes
+    const digest = 'sha512';
+
+    const hash = crypto.pbkdf2Sync(password, salt, iterations, keylen, digest).toString('base64url');
+    return hash;
 }
 
 /**
@@ -24,7 +27,6 @@ async function encryptPassword(text, salt){
  * @returns
  */
 async function isValidUser(username, password){
-    //let query = 'SELECT id, name, username, password, age, hash_password from usuario where username = ?';
     let query = 'SELECT idUsuario as id, email, nombre, password FROM usuario WHERE email = ?';
     let params = [username];
     let qResult = await dataSource.getDataWithParams(query, params);

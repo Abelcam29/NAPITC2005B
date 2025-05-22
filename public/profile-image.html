@@ -35,6 +35,8 @@
               if(file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                  const base64 = e.target.result;
+                  imageBase64 = base64;
                   const img = document.getElementById('preview-img');
                   img.src = e.target.result;
                   img.style.display = 'block';
@@ -47,7 +49,8 @@
 
             document.getElementById('next-btn').addEventListener('click', function (){
             localStorage.setItem('profile-image', JSON.stringify({
-            image: imageBase64
+            image: imageBase64, // base64 completo: "data:image/png;base64,...."
+            name: `profile_${Date.now()}.png`
             }));
             window.location.href = 'user-location.html';
           });

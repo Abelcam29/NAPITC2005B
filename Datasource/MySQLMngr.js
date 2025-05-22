@@ -107,29 +107,31 @@ async function getDataWithParams(query, params){
  * @param {Array} params
  * @returns {Object}
  */
-async function insertData(query, params){
-    try{
-        console.log("Insert Data");
-        const conn = await open();
-        return new Promise(function (resolve, reject){
-            conn.connect((err)=>{
-                if(err){
-                    reject(err.message);
-                } else{
-                    conn.query(query, params, (error, data, fields) => {
-                        conn.end();
-                        if(error){
-                            reject(new QueryResult(false, null, 0, 0, error));
-                        } else{
-                            resolve(new QueryResult(true, data, data.insertId, data.affectedRows, ''));
-                        }
-                    })
+async function insertData(query, params) {
+    console.log("Insert Data");
+    const conn = await open();
+    return new Promise((resolve, reject) => {
+        conn.connect((err) => {
+            if (err) {
+                reject(new QueryResult(false, null, 0, 0, err));
+                return;
+            }
+
+            conn.query(query, params, (error, result) => {
+                conn.end();
+
+                if (error) {
+                    console.error("❌ Error en query:", error);
+                    resolve(new QueryResult(false, null, 0, 0, error));
+                } else {
+                    const insertId = result?.insertId ?? 0;
+                    const affectedRows = result?.affectedRows ?? 0;
+                    console.log("✅ Query ejecutado. InsertID:", insertId);
+                    resolve(new QueryResult(true, result, insertId, affectedRows, ''));
                 }
             });
         });
-    }catch(error){
-        console.log(error);
-    }
+    });
 }
 
 /** 

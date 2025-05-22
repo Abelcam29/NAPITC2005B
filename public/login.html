@@ -67,7 +67,7 @@
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
 
-  const response = await fetch('Consultas/api/login', {
+  const response = await fetch('/Consultas/api/login', {
     method: 'POST',
     headers: { 'Content-Type' : 'application/json'},
     body: JSON.stringify({ email, password })
@@ -76,8 +76,8 @@
   const data = await response.json();
   if(response.ok && data.token) {
     const payload = JSON.parse(atob(data.token.split('.')[1]))
-    const rol = payload.rol;
-    const estado = payload.estado;
+    const rol = data.rol;
+    const estado = data.estado;
     const Nombre = payload.nombre;
     if (rol === 1 && estado ===  'A')
     {
@@ -104,9 +104,13 @@
       window.location.href = 'indexSAdmin.html';
       alert('Bienvenido ' + Nombre);
     }
-    else if(estado === 'I')
+    else if(estado === 'P')
     {
       alert('Usuario inactivo, espera la activación de tu cuenta por correo electrónico.');
+    }
+    else
+    {
+      alert("Credenciales incorrectas");
     }
   }
  });

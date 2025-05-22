@@ -48,9 +48,7 @@
     </div>
     <!-- Keep the GPT Engineer script tag -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-  </body>
-</html>
-<script>
+    <script>
     document.getElementById('userOrgForm').addEventListener('submit', async function (e) {
         e.preventDefault();
         localStorage.setItem('user-organization', JSON.stringify({
@@ -58,7 +56,7 @@
             Dorg: document.getElementById('Dorg').value
         }));
 
-        const signupData = JSON.parse(localStorage.getItem('signup-data'));
+        const signupData = JSON.parse(localStorage.getItem('signupData'));
         const profileImage = JSON.parse(localStorage.getItem('profile-image'));
         const userLocation = JSON.parse(localStorage.getItem('user-location'));
         const userOrg = JSON.parse(localStorage.getItem('user-organization'));
@@ -67,19 +65,22 @@
             Apellidos:signupData.apellidos,
             email:signupData.email,
             password:signupData.password,
-            pais:userLocation.pais,
-            numerotel:userLocation.telefono,
+            pais:userLocation.country,
+            numerotel:userLocation.phone,
             region:userLocation.region,
-            ciudad:userLocation.ciudad,
+            ciudad:userLocation.city,
             nombreOrganizacion:userOrg.Norg,
             descOrganizacion:userOrg.Dorg,
             rol:2,
             estado:'P',
-            idResponsable:NULL,
-            imagen:profileImage && profileImage.image ? {base64: profileImage.image } : null
+            idResponsable:null,
+            imagen: profileImage?.image ? {
+            name: profileImage.name,
+            base64: profileImage.image
+            } : null
         };
 
-        const response = await fetch('/Consultas/api/inserUser', {
+        const response = await fetch('/Consultas/api/insertUser', {
             method: 'POST',
             headers: {'Content-Type' : 'application/json'},
             body: JSON.stringify(userData)
@@ -88,7 +89,7 @@
         const data = await response.json();
         if(data.status === "success") {
             alert('Usuario registrado! espera la confirmacion por correo electronico');
-            localStorage.removeItem('signup-data');
+            localStorage.removeItem('signupData');
             localStorage.removeItem('profile-image');
             localStorage.removeItem('user-location');
             localStorage.removeItem('user-organization');
@@ -97,4 +98,6 @@
             alert('Error al registrar el usuario: ' + data.message);
         }
     });
-</script>
+    </script>
+  </body>
+</html>
